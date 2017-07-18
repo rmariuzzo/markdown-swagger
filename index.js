@@ -22,8 +22,8 @@ Promise.resolve()
   .then(() => shouldBeDefined(target, 'The target (markdown) file should be specified.'))
   .then(() => readSource(source))
   .then((yaml) => generateTable(yaml))
-  .then((data) => console.log(data))
-  // .then((table) => updateTable(table, target))
+  // .then((data) => console.log(data))
+  .then((table) => updateTable(table, target))
   .catch((error) => {
     print.error(error)
     process.exit(1)
@@ -77,7 +77,7 @@ function generateTable(yaml) {
   const rows = table.split('\n')
   const divider = rows[0].replace(/[^\|]/g, '-').replace(/-\|-/g, ' | ')
   rows.splice(1, 0, divider)
-  return rows.join('\n')
+  return rows.map((row) => ` ${row}`).join('\n')
 }
 
 function find(a = [], b = []) {
@@ -90,4 +90,30 @@ function find(a = [], b = []) {
     return found !== undefined
   })
   return found
+}
+
+function updateTable(table, target) {
+  return fs.readFile(target, 'utf-8')
+    .then((data) => {
+      const tagMatcher = /<!-- ?\/?markdown-swagger ?-->/g
+      const indexes = []
+      let match
+      let openingTag = true
+      while(match = tagMatcher.exec(data)) {
+        indexes.push(openingTag ? match.index : tagMatcher.lastIndex)
+        openingTag = !openingTag
+      }
+      const [from, to] = indexes
+      const before = data.substring(0, from)
+      const after = data.substring(to)
+      const updated = `${before}<!-- markdown-swagger -->\n${table}\n<!-- /markdown-swagger -->${after}`
+      return fs.writeFile(target, updated)
+    })
+    .catch((error) => {
+      if (error.code === 'ENOENT') {
+        throw new Error(`${source} doesn't exist`)
+      }
+
+      throw error;
+    })
 }
