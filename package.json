@@ -12,5 +12,14 @@
     "fs-extra": "^4.0.0",
     "js-yaml": "^3.9.0",
     "meow": "^3.7.0"
-  }
+  },
+  "bin": {
+    "markdown-swagger": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "README.md",
+    "LICENSE",
+    "yarn.lock"
+  ]
 }
