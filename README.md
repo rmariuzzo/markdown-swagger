@@ -19,7 +19,7 @@ This will read the specified swagger file and generate a table describing the AP
 The `markdown-swagger` script will look for the for the following piece of text inside the target markdown file to do its stuff:
 
 ```markdown
-<!-- MD -->
+<!-- markdown-swagger -->
   Everything here will be replaced by markdown-swagger
-<!-- /MD -->
+<!-- /markdown-swagger -->
 ```
