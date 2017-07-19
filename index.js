@@ -62,14 +62,16 @@ function generateTable(yaml) {
   const data = []
   Object.keys(paths).forEach((path) => {
     const endpoint = paths[path]
-    const method = find(Object.keys(endpoint), methods)
-    const security = endpoint[method].security
-    const description = endpoint[method].description
-    data.push({
-      endpoint: `\`${path}\``,
-      method: method.toUpperCase(),
-      auth: security ? 'Yes' : 'No',
-      description,
+    const definedMethods = find(Object.keys(endpoint), methods)
+    definedMethods.forEach((method) => {
+      const security = endpoint[method].security
+      const description = endpoint[method].description
+      data.push({
+        endpoint: `\`${path}\``,
+        method: method.toUpperCase(),
+        auth: security ? 'Yes' : 'No',
+        description,
+      })
     })
   })
   const table = columnify(data, {
@@ -83,13 +85,12 @@ function generateTable(yaml) {
 }
 
 function find(a = [], b = []) {
-  let found = undefined
+  let found = []
   a.find((ea) => {
     const ib = b.indexOf(ea)
     if (ib > -1) {
-      found = b[ib]
+      found.push(b[ib])
     }
-    return found !== undefined
   })
   return found
 }
