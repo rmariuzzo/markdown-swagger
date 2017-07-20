@@ -9,6 +9,7 @@ const print = require('chalk-printer')
 const command = require('meow')
 const columnify = require('columnify')
 
+// Command line definition.
 const cli = command(`
   Usage
     $ markdown-swagger <swagger.yaml> <markdown.md>
@@ -20,12 +21,11 @@ const cli = command(`
 const [source, target] = cli.input
 
 Promise.resolve()
-  .then(() => shouldBeDefined(source, 'The source (swagger) file should be specified.'))
-  .then(() => shouldBeDefined(target, 'The target (markdown) file should be specified.'))
-  .then(() => readSource(source))
-  .then((yaml) => generateTable(yaml))
-  // .then((data) => console.log(data))
-  .then((table) => updateTable(table, target))
+  .then(() => source || Promise.reject('The swagger source file is required.'))
+  .then(() => target || Promise.reject('The markdown target file is required.'))
+  .then(() => readSwaggerFile(source))
+  .then((swagger) => generateTable(swagger))
+  .then((table) => updateMarkdownTable(table, target))
   .catch((error) => {
     print.error(error)
     process.exit(1)
@@ -37,7 +37,7 @@ function shouldBeDefined(obj, message) {
   }
 }
 
-function readSource(source) {
+function readSwaggerFile(source) {
   return fs.readFile(source, 'utf-8')
     .then((data) => yaml.safeLoad(data))
     .catch((error) => {
@@ -95,7 +95,7 @@ function find(a = [], b = []) {
   return found
 }
 
-function updateTable(table, target) {
+function updateMarkdownTable(table, target) {
   return fs.readFile(target, 'utf-8')
     .then((data) => {
       const tagMatcher = /<!-- ?\/?markdown-swagger ?-->/g
