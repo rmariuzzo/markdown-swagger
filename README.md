@@ -1,10 +1,9 @@
-<h1 align=center>Markdown Swagger</h1>
-
 <div align=center>
+  <h1>Markdown Swagger</h1>
+  <p>Generate API docs from Swagger file into markdown file.</p>
   <img src="https://github.com/rmariuzzo/markdown-swagger/raw/master/banner.png" />
 </div>
 
-Generate markdown API docs (swagger).
 
 ## Installation
 
