@@ -8,6 +8,7 @@ const yaml = require('js-yaml')
 const print = require('chalk-printer')
 const command = require('meow')
 const columnify = require('columnify')
+const xmlComment = require('xml-comment-api')
 
 // Command line definition.
 const cli = command(`
@@ -98,18 +99,7 @@ function find(a = [], b = []) {
 function updateMarkdownTable(table, target) {
   return fs.readFile(target, 'utf-8')
     .then((data) => {
-      const tagMatcher = /<!-- ?\/?markdown-swagger ?-->/g
-      const indexes = []
-      let match
-      let openingTag = true
-      while(match = tagMatcher.exec(data)) {
-        indexes.push(openingTag ? match.index : tagMatcher.lastIndex)
-        openingTag = !openingTag
-      }
-      const [from, to] = indexes
-      const before = data.substring(0, from)
-      const after = data.substring(to)
-      const updated = `${before}<!-- markdown-swagger -->\n${table}\n<!-- /markdown-swagger -->${after}`
+      const updated = xmlComment(data).replace('markdown-swagger', `\n${table}\n`).contents()
       return fs.writeFile(target, updated)
     })
     .catch((error) => {
