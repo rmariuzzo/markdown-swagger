@@ -3,7 +3,6 @@
 'use strict'
 
 const fs = require('fs-extra')
-const path = require('path')
 const yaml = require('js-yaml')
 const print = require('chalk-printer')
 const command = require('meow')
@@ -31,12 +30,6 @@ Promise.resolve()
     print.error(error)
     process.exit(1)
   })
-
-function shouldBeDefined(obj, message) {
-  if (obj === undefined) {
-    throw new Error(message)
-  }
-}
 
 function readSwaggerFile(source) {
   return fs.readFile(source, 'utf-8')
